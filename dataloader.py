@@ -15,8 +15,7 @@ Y_HEADER = ["label"]
 
 class Dataloader:
 
-    @staticmethod
-    def read_and_join_subject_session_data(data_path, subject_id, session_number):
+    def read_and_join_subject_session_data(self, data_path, subject_id, session_number):
 
         x_path = os.path.join(data_path, X_TEMPLATE.format(subject_id, session_number))
         x_time_path = os.path.join(data_path, X_TIME_TEMPLATE.format(subject_id, session_number))
@@ -39,9 +38,18 @@ class Dataloader:
         combined_y = []
         for subject_id in subject_ids:
             for session_number in session_numbers:
+                training_data_path = os.path.join(data_path, X_TEMPLATE.format(subject_id, session_number))
+                if not os.path.isfile(training_data_path):
+                    continue
                 X, y = self.read_and_join_subject_session_data(data_path, subject_id, session_number)
                 combined_x.append(X)
                 combined_y.append(y)
+        print(combined_x)
+        concat_x = pd.concat(combined_x)
+        concat_x = concat_x.reset_index(drop=False).rename(columns={"acc_x", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "time"})
+
+        print(concat_x.shape)
+        print(concat_x)
         return pd.DataFrame(combined_x,
                             columns=["acc_x", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "time"]), pd.DataFrame(
             combined_y, columns=["labels", "time"])
