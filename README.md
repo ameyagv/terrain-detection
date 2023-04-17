@@ -1,1 +1,1 @@
-# terrain-identification
+# terrain-detection
